@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Monitoring System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        h2 {
+            color: #2e7d32;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: #2e7d32;
+            outline: none;
+        }
+
+        .appliance-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: space-between;
+        }
+
+        button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .add-appliance {
+            background-color: #4a90e2;
+        }
+
+        .wattage-display {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-model-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .brand-model-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step active" id="step1">
+            <h2>Basic Information</h2>
+            <button type="button" onclick="showStep(2)">Continue</button>
+        </div>
+
+        <div class="step" id="step2">
+            <h2>Select Your Purpose</h2>
+            <div class="form-group">
+                <select id="purposeSelect">
+                    <option value="">Select Usage Purpose</option>
+                    <option value="home">Home</option>
+                    <option value="hospital">Hospital</option>
+                    <option value="office">Office</option>
+                    <option value="factory">Factory</option>
+                </select>
+            </div>
+            <button type="button" onclick="showStep(3)">Next</button>
+        </div>
+
+        <div class="step" id="step3">
+            <h2>Add Appliances</h2>
+            <div id="applianceContainer"></div>
+            <div class="button-group">
+                <button type="button" class="add-appliance" onclick="addAppliance()">＋ Add Appliance</button>
+                <button type="button" onclick="submitForm()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <template id="applianceTemplate">
+        <div class="appliance-section">
+            <div class="form-group">
+                <label>Appliance Type</label>
+                <select class="appliance-select"></select>
+            </div>
+
+            <div class="brand-model-group">
+                <div class="form-group">
+                    <label>Brand</label>
+                    <select class="brand-select"></select>
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <select class="model-select"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Daily Usage Time (hours)</label>
+                <input type="number" min="0" max="24" class="usage-time">
+            </div>
+
+            <div class="wattage-display"></div>
+        </div>
+    </template>
+
+    <script>
+        const applianceData = {
+            home: [
+                { name: "Refrigerator", brands: [{ name: "LG", models: ["260L", "320L"], wattage: [150, 200] }] },
+                { name: "Washing Machine", brands: [{ name: "Samsung", models: ["Front Load", "Top Load"], wattage: [500, 800] }] }
+            ],
+            hospital: [
+                { name: "X-Ray Machine", brands: [{ name: "GE", models: ["Optima", "Revolution"], wattage: [4000, 6000] }] }
+            ],
+            office: [
+                { name: "Computer", brands: [{ name: "Dell", models: ["Inspiron", "XPS"], wattage: [150, 250] }] },
+                { name: "Printer", brands: [{ name: "HP", models: ["LaserJet", "InkJet"], wattage: [500, 700] }] }
+            ]
+        };
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+        }
+
+        function addAppliance() {
+            const template = document.getElementById('applianceTemplate').content.cloneNode(true);
+            const select = template.querySelector('.appliance-select');
+
+            Object.keys(applianceData).forEach(category => {
+                applianceData[category].forEach(appliance => {
+                    let option = document.createElement('option');
+                    option.value = appliance.name;
+                    option.textContent = appliance.name;
+                    select.appendChild(option);
+                });
+            });
+
+            select.addEventListener("change", function () {
+                const selectedAppliance = applianceData.home.find(a => a.name === this.value);
+                const brandSelect = this.closest('.appliance-section').querySelector('.brand-select');
+
+                brandSelect.innerHTML = '<option value="">Select Brand</option>';
+                selectedAppliance.brands.forEach(brand => {
+                    let option = document.createElement('option');
+                    option.value = brand.name;
+                    option.textContent = brand.name;
+                    brandSelect.appendChild(option);
+                });
+            });
+
+            document.getElementById('applianceContainer').appendChild(template);
+        }
+
+        function submitForm() {
+            alert("Appliance selection submitted successfully!");
+        }
+    </script>
+</body>
+</html>

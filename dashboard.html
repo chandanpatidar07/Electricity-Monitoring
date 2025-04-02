@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Consumption Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background: #111;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <p>Overview</p>
+        <p>Usage Statistics</p>
+        <p>Cost Analysis</p>
+    </div>
+    <div class="main-content">
+        <h1>Electricity Consumption Dashboard</h1>
+        <div class="card">
+            <h2>Overview</h2>
+            <p>Total Consumption: <strong>{{ total_consumption }} kWh</strong></p>
+            <p>Total Cost: <strong>${{ total_cost }}</strong></p>
+            <p>Efficiency: <strong>{{ efficiency }}%</strong></p>
+        </div>
+        <div class="card">
+            <h2>Consumption Chart</h2>
+            <div class="chart-container">
+                <canvas id="electricityChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Appliance Usage Details</h2>
+            <table>
+                <tr>
+                    <th>Appliance</th>
+                    <th>Usage (Hours)</th>
+                    <th>Needed (kWh)</th>
+                    <th>Wasted (kWh)</th>
+                    <th>Total Cost ($)</th>
+                </tr>
+                {% for appliance in appliances %}
+                <tr>
+                    <td>{{ appliance.appliance_name }}</td>
+                    <td>{{ appliance.usage_time_hours }}</td>
+                    <td>{{ appliance.electricity_needed_kwh }}</td>
+                    <td>{{ appliance.electricity_wasted_kwh }}</td>
+                    <td>{{ appliance.total_cost }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <script>
+        var chartData = JSON.parse('{{ chart_data|escapejs }}');
+        var ctx = document.getElementById('electricityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Needed kWh',
+                        data: chartData.needed,
+                        backgroundColor: 'green'
+                    },
+                    {
+                        label: 'Wasted kWh',
+                        data: chartData.wasted,
+                        backgroundColor: 'red'
+                    }
+                ]
+            }
+        });
+    </script>
+</body>
+</html>
