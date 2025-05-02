@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Energy Monitoring System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .step.active {
+            display: block;
+        }
+        h2 {
+            color: #2e7d32;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        select:focus, input:focus {
+            border-color: #2e7d32;
+            outline: none;
+        }
+        .appliance-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #2e7d32;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: space-between;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover:enabled {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background-color: #a5d6a7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .add-appliance {
+            background-color: #4a90e2;
+        }
+        .wattage-display {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .brand-model-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .brand-model-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="applianceForm" method="post" action="{% url 'add_appliances' %}">
+            {% csrf_token %}
+            <div class="step active" id="step1">
+                <h2>Basic Information</h2>
+                <button type="button" onclick="showStep(2)">Continue</button>
+            </div>
+            <div class="step" id="step2">
+                <h2>Select Your Purpose</h2>
+                <div class="form-group">
+                    <select id="purposeSelect" name="purpose" required>
+                        <option value="">Select Usage Purpose</option>
+                        <option value="home">Home</option>
+                        <option value="hospital">Hospital</option>
+                        <option value="office">Office</option>
+                        <option value="factory">Factory</option>
+                    </select>
+                </div>
+                <button type="button" onclick="showStep(3)">Next</button>
+            </div>
+            <div class="step" id="step3">
+                <h2>Add Appliances</h2>
+                <div id="applianceContainer"></div>
+                <div class="button-group">
+                    <button type="button" class="add-appliance" id="addApplianceBtn" onclick="addAppliance()" disabled>＋ Add Appliance</button>
+                    <button type="submit" id="submitBtn" disabled>Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <template id="applianceTemplate">
+        <div class="appliance-section">
+            <div class="form-group">
+                <label>Appliance Type</label>
+                <select class="appliance-select" name="appliance_name[]" required></select>
+            </div>
+            <div class="brand-model-group">
+                <div class="form-group">
+                    <label>Brand</label>
+                    <select class="brand-select" name="brand[]" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <select class="model-select" name="model[]" required></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Daily Usage Time (hours)</label>
+                <input type="number" min="0" max="24" class="usage-time" name="usage_time_hours[]" required>
+            </div>
+            <div class="wattage-display"></div>
+        </div>
+    </template>
+    <script>
+        let applianceData = {};
+        async function loadApplianceData() {
+            try {
+                const response = await fetch('appliance_dataset_india.json');
+                applianceData = await response.json();
+            } catch (error) {
+                console.error('Error loading appliance data:', error);
+            }
+        }
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+        }
+        function addAppliance() {
+            const template = document.getElementById('applianceTemplate').content.cloneNode(true);
+            const select = template.querySelector('.appliance-select');
+            const purpose = document.getElementById('purposeSelect').value;
+            if (!purpose || !applianceData[purpose]) {
+                alert('Please select a valid purpose first.');
+                return;
+            }
+            // Clear previous options to avoid duplicates
+            select.innerHTML = '<option value="">Select Appliance</option>';
+            applianceData[purpose].forEach(appliance => {
+                let option = document.createElement('option');
+                option.value = appliance.appliance;
+                option.textContent = appliance.appliance;
+                select.appendChild(option);
+            });
+            // Add event listener for appliance select change
+            select.addEventListener("change", function () {
+                const selectedAppliance = applianceData[purpose].find(a => a.appliance === this.value);
+                const brandSelect = this.closest('.appliance-section').querySelector('.brand-select');
+                const modelSelect = this.closest('.appliance-section').querySelector('.model-select');
+                const wattageDisplay = this.closest('.appliance-section').querySelector('.wattage-display');
+                brandSelect.innerHTML = '<option value="">Select Brand</option>';
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+                wattageDisplay.textContent = '';
+                if (selectedAppliance) {
+                    selectedAppliance.brands.forEach(brand => {
+                        let option = document.createElement('option');
+                        option.value = brand.name;
+                        option.textContent = brand.name;
+                        brandSelect.appendChild(option);
+                    });
+                }
+            });
+            // Add event listener for brand select change
+            const brandSelect = template.querySelector('.brand-select');
+            brandSelect.addEventListener("change", function () {
+                const applianceSection = this.closest('.appliance-section');
+                const applianceSelect = applianceSection.querySelector('.appliance-select');
+                const modelSelect = applianceSection.querySelector('.model-select');
+                const wattageDisplay = applianceSection.querySelector('.wattage-display');
+                const purpose = document.getElementById('purposeSelect').value;
+                const selectedAppliance = applianceData[purpose].find(a => a.appliance === applianceSelect.value);
+                const selectedBrand = selectedAppliance ? selectedAppliance.brands.find(b => b.name === this.value) : null;
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+                wattageDisplay.textContent = '';
+                if (selectedBrand) {
+                    selectedBrand.models.forEach((model, index) => {
+                        let option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                }
+            });
+            // Add event listener for model select change
+            const modelSelect = template.querySelector('.model-select');
+            modelSelect.addEventListener("change", function () {
+                const applianceSection = this.closest('.appliance-section');
+                const applianceSelect = applianceSection.querySelector('.appliance-select');
+                const brandSelect = applianceSection.querySelector('.brand-select');
+                const wattageDisplay = applianceSection.querySelector('.wattage-display');
+                const purpose = document.getElementById('purposeSelect').value;
+                const selectedAppliance = applianceData[purpose].find(a => a.appliance === applianceSelect.value);
+                const selectedBrand = selectedAppliance ? selectedAppliance.brands.find(b => b.name === brandSelect.value) : null;
+                const selectedModelIndex = this.selectedIndex - 1; // because of default option
+                if (selectedBrand && selectedModelIndex >= 0) {
+                    const wattage = selectedBrand.wattage[selectedModelIndex];
+                    wattageDisplay.textContent = `Wattage: ${wattage} W`;
+                } else {
+                    wattageDisplay.textContent = '';
+                }
+            });
+            document.getElementById('applianceContainer').appendChild(template);
+            updateSubmitButtonState();
+        }
+        document.getElementById('purposeSelect').addEventListener('change', function () {
+            document.getElementById('applianceContainer').innerHTML = '';
+            const addBtn = document.getElementById('addApplianceBtn');
+            addBtn.disabled = !this.value;
+            updateSubmitButtonState();
+        });
+        function updateSubmitButtonState() {
+            const applianceContainer = document.getElementById('applianceContainer');
+            const submitBtn = document.getElementById('submitBtn');
+            const hasAppliances = applianceContainer.children.length > 0;
+            submitBtn.disabled = !hasAppliances;
+        }
+        window.onload = function () {
+            loadApplianceData();
+            document.getElementById('addApplianceBtn').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+        };
+    </script>
+</body>
+</html>

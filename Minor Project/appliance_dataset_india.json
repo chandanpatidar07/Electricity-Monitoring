@@ -1,0 +1,336 @@
+{
+    "home": [
+        {
+            "appliance": "Refrigerator",
+            "brands": [
+                {
+                    "name": "LG",
+                    "models": [
+                        "190L",
+                        "260L"
+                    ],
+                    "wattage": [
+                        120,
+                        200
+                    ]
+                },
+                {
+                    "name": "Samsung",
+                    "models": [
+                        "253L",
+                        "275L"
+                    ],
+                    "wattage": [
+                        130,
+                        220
+                    ]
+                },
+                {
+                    "name": "Whirlpool",
+                    "models": [
+                        "200L",
+                        "310L"
+                    ],
+                    "wattage": [
+                        110,
+                        210
+                    ]
+                },
+                {
+                    "name": "Haier",
+                    "models": [
+                        "220L",
+                        "320L"
+                    ],
+                    "wattage": [
+                        140,
+                        230
+                    ]
+                }
+            ]
+        },
+        {
+            "appliance": "Washing Machine",
+            "brands": [
+                {
+                    "name": "IFB",
+                    "models": [
+                        "Front Load",
+                        "Top Load"
+                    ],
+                    "wattage": [
+                        500,
+                        800
+                    ]
+                },
+                {
+                    "name": "Samsung",
+                    "models": [
+                        "EcoBubble",
+                        "ActiveWash"
+                    ],
+                    "wattage": [
+                        450,
+                        850
+                    ]
+                },
+                {
+                    "name": "LG",
+                    "models": [
+                        "TurboDrum",
+                        "Smart Inverter"
+                    ],
+                    "wattage": [
+                        400,
+                        750
+                    ]
+                },
+                {
+                    "name": "Bosch",
+                    "models": [
+                        "Serie 4",
+                        "Serie 6"
+                    ],
+                    "wattage": [
+                        600,
+                        900
+                    ]
+                }
+            ]
+        }
+    ],
+    "hospital": [
+        {
+            "appliance": "X-Ray Machine",
+            "brands": [
+                {
+                    "name": "GE Healthcare",
+                    "models": [
+                        "Optima",
+                        "Revolution"
+                    ],
+                    "wattage": [
+                        4000,
+                        6000
+                    ]
+                },
+                {
+                    "name": "Siemens",
+                    "models": [
+                        "Multix Fusion",
+                        "Ysio Max"
+                    ],
+                    "wattage": [
+                        3500,
+                        5500
+                    ]
+                },
+                {
+                    "name": "Allengers",
+                    "models": [
+                        "Mars 15",
+                        "MARS 35"
+                    ],
+                    "wattage": [
+                        3000,
+                        5000
+                    ]
+                }
+            ]
+        },
+        {
+            "appliance": "ECG Machine",
+            "brands": [
+                {
+                    "name": "BPL",
+                    "models": [
+                        "Cardiart 6208",
+                        "Cardiart 9108D"
+                    ],
+                    "wattage": [
+                        150,
+                        250
+                    ]
+                },
+                {
+                    "name": "Philips",
+                    "models": [
+                        "PageWriter TC20",
+                        "TC30"
+                    ],
+                    "wattage": [
+                        200,
+                        300
+                    ]
+                },
+                {
+                    "name": "Schiller",
+                    "models": [
+                        "CARDIOVIT AT-1",
+                        "AT-102"
+                    ],
+                    "wattage": [
+                        180,
+                        280
+                    ]
+                }
+            ]
+        }
+    ],
+    "office": [
+        {
+            "appliance": "Computer",
+            "brands": [
+                {
+                    "name": "Dell",
+                    "models": [
+                        "Inspiron",
+                        "Vostro"
+                    ],
+                    "wattage": [
+                        150,
+                        250
+                    ]
+                },
+                {
+                    "name": "HP",
+                    "models": [
+                        "Pavilion",
+                        "ProDesk"
+                    ],
+                    "wattage": [
+                        160,
+                        260
+                    ]
+                },
+                {
+                    "name": "Lenovo",
+                    "models": [
+                        "ThinkCentre",
+                        "IdeaCentre"
+                    ],
+                    "wattage": [
+                        170,
+                        270
+                    ]
+                }
+            ]
+        },
+        {
+            "appliance": "Printer",
+            "brands": [
+                {
+                    "name": "HP",
+                    "models": [
+                        "LaserJet 1020",
+                        "InkJet 3635"
+                    ],
+                    "wattage": [
+                        400,
+                        700
+                    ]
+                },
+                {
+                    "name": "Canon",
+                    "models": [
+                        "PIXMA",
+                        "LBP6030B"
+                    ],
+                    "wattage": [
+                        300,
+                        600
+                    ]
+                },
+                {
+                    "name": "Epson",
+                    "models": [
+                        "L3150",
+                        "EcoTank L3210"
+                    ],
+                    "wattage": [
+                        350,
+                        650
+                    ]
+                }
+            ]
+        }
+    ],
+    "factory": [
+        {
+            "appliance": "Industrial Motor",
+            "brands": [
+                {
+                    "name": "Crompton",
+                    "models": [
+                        "3HP",
+                        "5HP"
+                    ],
+                    "wattage": [
+                        2200,
+                        3700
+                    ]
+                },
+                {
+                    "name": "Siemens",
+                    "models": [
+                        "1LE1",
+                        "1LE2"
+                    ],
+                    "wattage": [
+                        2500,
+                        5000
+                    ]
+                },
+                {
+                    "name": "ABB",
+                    "models": [
+                        "M2BAX",
+                        "M3BP"
+                    ],
+                    "wattage": [
+                        3000,
+                        7000
+                    ]
+                }
+            ]
+        },
+        {
+            "appliance": "Welding Machine",
+            "brands": [
+                {
+                    "name": "ESAB",
+                    "models": [
+                        "Buddy Arc",
+                        "Weldmate"
+                    ],
+                    "wattage": [
+                        4000,
+                        9000
+                    ]
+                },
+                {
+                    "name": "Ador",
+                    "models": [
+                        "Champ",
+                        "Ranger"
+                    ],
+                    "wattage": [
+                        5000,
+                        10000
+                    ]
+                },
+                {
+                    "name": "Rilon",
+                    "models": [
+                        "ARC 200",
+                        "TIG 400"
+                    ],
+                    "wattage": [
+                        3000,
+                        8500
+                    ]
+                }
+            ]
+        }
+    ]
+}
